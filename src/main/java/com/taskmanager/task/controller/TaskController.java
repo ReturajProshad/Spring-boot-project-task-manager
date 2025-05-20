@@ -24,11 +24,6 @@ public class TaskController {
     @PostMapping("/addTask")
     public ResponseEntity<ApiResponse<Task>> addTask(@RequestBody TaskDTO task){
 
-        if(task.getDetails().isBlank() || task.getName().isBlank())
-        {
-            throw new IllegalArgumentException("All Fields Are Required");
-        }
-
         Task savedTask=taskService.addTask(task);
         final ApiResponse<Task> response=new ApiResponse<Task>(
                 true,

@@ -1,9 +1,7 @@
 package com.taskmanager.task.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.taskmanager.task.enums.TaskStatus;
+import jakarta.persistence.*;
 
 @Entity
 
@@ -11,8 +9,27 @@ public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(unique = true)
     private String name;
     private String details;
+    @Enumerated(EnumType.STRING)
+    private TaskStatus status;
+
+    public Task(Long id, String name, String details, TaskStatus status) {
+        this.id = id;
+        this.name = name;
+        this.details = details;
+        this.status = status;
+    }
+
+    public TaskStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(TaskStatus status) {
+        this.status = status;
+    }
 
     public Task(Long id, String name, String details) {
         this.id = id;
@@ -47,9 +64,11 @@ public class Task {
     public void setDetails(String details) {
         this.details = details;
     }
+
+
     public void setNameAndDetails(String name,String details) {
         this.name=name;
         this.details = details;
-
     }
+
 }
