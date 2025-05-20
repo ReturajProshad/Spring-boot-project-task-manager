@@ -8,6 +8,8 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.List;
+
 @Service
 public class TaskService {
     private final TaskRepository taskRepository;
@@ -17,7 +19,6 @@ public class TaskService {
     }
 
     public Task addTask(TaskDTO taskDTO){
-
 
         if(taskDTO.getDetails().isBlank() || taskDTO.getName().isBlank())
         {
@@ -33,5 +34,8 @@ public class TaskService {
         task.setNameAndDetails(taskDTO.getName(),taskDTO.getDetails());
         task.setStatus(TaskStatus.NOT_STARTED);
         return taskRepository.save(task);
+    }
+    public List<Task> getTasks(){
+        return taskRepository.findAll();
     }
 }

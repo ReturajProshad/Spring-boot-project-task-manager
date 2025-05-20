@@ -6,10 +6,9 @@ import com.taskmanager.task.entity.Task;
 import com.taskmanager.task.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/task")
@@ -30,6 +29,12 @@ public class TaskController {
                 "Task Successfully added",
                 savedTask
         );
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/allTasks")
+    public ResponseEntity<ApiResponse<List<Task>>> getAll(){
+        ApiResponse<List<Task>> response=new ApiResponse<>(true,"Successfully Retrieve all tasks",taskService.getTasks());
         return ResponseEntity.ok(response);
     }
 }
