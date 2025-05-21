@@ -5,6 +5,7 @@ import com.taskmanager.task.dto.TaskDTO;
 import com.taskmanager.task.entity.Task;
 import com.taskmanager.task.enums.TaskStatus;
 import com.taskmanager.task.service.TaskService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,7 +27,7 @@ public class TaskController {
     }
 
     @PostMapping("/addTask")
-    public ResponseEntity<ApiResponse<Task>> addTask(@RequestBody TaskDTO task){
+    public ResponseEntity<ApiResponse<Task>> addTask(@Valid @RequestBody TaskDTO task){
 
         Task savedTask=taskService.addTask(task);
         final ApiResponse<Task> response=new ApiResponse<Task>(
@@ -63,7 +64,7 @@ public class TaskController {
     }
 
     @PutMapping("/update/{id}")
-    public  ResponseEntity<ApiResponse<Task>> updateTask(@PathVariable Long id,@RequestBody TaskDTO taskDTO){
+    public  ResponseEntity<ApiResponse<Task>> updateTask(@PathVariable Long id,@Valid @RequestBody TaskDTO taskDTO){
         Task task=taskService.updateTaskDetails(id,taskDTO);
         final ApiResponse<Task> response=new ApiResponse<Task>(
                 true,
