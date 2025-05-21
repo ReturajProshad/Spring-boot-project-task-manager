@@ -4,6 +4,7 @@ package com.taskmanager.task.service;
 import com.taskmanager.task.dto.TaskDTO;
 import com.taskmanager.task.entity.Task;
 import com.taskmanager.task.enums.TaskStatus;
+import com.taskmanager.task.mapper.TaskMapper;
 import com.taskmanager.task.repository.TaskRepository;
 import com.taskmanager.task.specification.TaskSpecification;
 import org.springframework.data.domain.Page;
@@ -33,8 +34,7 @@ public class TaskService {
         }
 
 
-        Task task=new Task();
-        task.setNameAndDetails(taskDTO.getName(),taskDTO.getDetails());
+        Task task = TaskMapper.toEntity(taskDTO);
         task.setStatus(TaskStatus.NOT_STARTED);
         return taskRepository.save(task);
     }
@@ -57,14 +57,14 @@ public class TaskService {
         {
             throw new IllegalArgumentException("All Fields Are Required");
         }
-        existingTask.setNameAndDetails(taskDTO.getName(),taskDTO.getDetails());
+        TaskMapper.updateDetailsFromDto(taskDTO, existingTask);
         return taskRepository.save(existingTask);
     }
 
 
     public Task updateTaskStatus(Long id,TaskDTO status){
         Task task= getById(id);
-       task.setStatus(status.getStatus());
+        TaskMapper.updateStatusFromDto(status, task);
         return taskRepository.save(task);
     }
     public Boolean deleteTask(Long id){
