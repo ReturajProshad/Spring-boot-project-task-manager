@@ -2,6 +2,7 @@ package com.taskmanager.task.dto;
 
 import com.taskmanager.task.enums.TaskStatus;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.springframework.validation.annotation.Validated;
 
@@ -12,6 +13,7 @@ public class TaskDTO {
     @NotBlank(message = "Task details are required")
     @Size(max = 500, message = "Details must be less than 500 characters")
     private String details;
+    @NotNull(message = "Status is required")
     private TaskStatus status;
 
     public TaskDTO(String name, TaskStatus status, String details) {

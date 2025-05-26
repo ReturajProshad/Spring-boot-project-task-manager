@@ -1,13 +1,18 @@
 package com.taskmanager.task.exception;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.taskmanager.task.dto.ApiResponse;
+import com.taskmanager.task.enums.TaskStatus;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.WebRequest;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,5 +37,25 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST
         );
 
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiResponse<Object>> handleHttpMessageNotReadable(
+            HttpMessageNotReadableException ex, WebRequest request) {
+
+        String errorMessage = "Invalid request body";
+
+        // Check if the error is specifically for enum parsing
+        if (ex.getCause() instanceof InvalidFormatException) {
+            InvalidFormatException ife = (InvalidFormatException) ex.getCause();
+            if (ife.getTargetType() != null && ife.getTargetType().isEnum()) {
+                errorMessage = String.format("Invalid status value: '%s'. Allowed values are: %s",
+                        ife.getValue(),
+                        Arrays.toString(TaskStatus.values()));
+            }
+        }
+
+        ApiResponse<Object> response = new ApiResponse<>(false, errorMessage, null);
+        return ResponseEntity.badRequest().body(response);
     }
 }
