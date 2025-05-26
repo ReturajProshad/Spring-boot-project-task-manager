@@ -1,0 +1,82 @@
+package com.taskmanager.task.service;
+
+
+import com.taskmanager.task.dto.TaskDTO;
+import com.taskmanager.task.entity.Task;
+import com.taskmanager.task.enums.TaskStatus;
+import com.taskmanager.task.mapper.TaskMapper;
+import com.taskmanager.task.repository.TaskRepository;
+import com.taskmanager.task.security.UserPrincipal;
+import com.taskmanager.task.specification.TaskSpecification;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class TaskService {
+    private final TaskRepository taskRepository;
+
+    public TaskService(TaskRepository tasksRepository) {
+        this.taskRepository = tasksRepository;
+    }
+
+    public Task addTask(TaskDTO taskDTO) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = (Long) authentication.getPrincipal(); // Get user ID from security context
+
+        if (taskRepository.existsByName(taskDTO.getName())) {
+            throw new IllegalArgumentException("Task name already exists");
+        }
+
+        Task task = TaskMapper.toEntity(taskDTO);
+        task.setUserId(userId);
+        task.setStatus(TaskStatus.NOT_STARTED);
+        return taskRepository.save(task);
+    }
+
+
+    public List<Task> getTasks(){
+        return taskRepository.findAll();
+    }
+
+
+    public Task getById(Long id) {
+        return taskRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Task Not Found"));
+    }
+
+
+    public Task updateTaskDetails(Long id,TaskDTO taskDTO){
+        Task existingTask= getById(id);
+        if(taskDTO.getDetails().isBlank() || taskDTO.getName().isBlank())
+        {
+            throw new IllegalArgumentException("All Fields Are Required");
+        }
+        TaskMapper.updateDetailsFromDto(taskDTO, existingTask);
+        return taskRepository.save(existingTask);
+    }
+
+
+    public Task updateTaskStatus(Long id,TaskDTO status){
+        Task task= getById(id);
+        TaskMapper.updateStatusFromDto(status, task);
+        return taskRepository.save(task);
+    }
+    public Boolean deleteTask(Long id){
+        Task task=getById(id);
+        taskRepository.delete(task);
+        return true;
+    }
+
+    public Page<Task> getTaskWithFilters(String name, TaskStatus status, Pageable pageable)
+    {
+        Specification<Task> spec=Specification.where(TaskSpecification.hasStatus(status)).and(TaskSpecification.nameContains(name));
+        return taskRepository.findAll(spec,pageable);
+    }
+
+}
