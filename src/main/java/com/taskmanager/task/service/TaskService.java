@@ -6,10 +6,13 @@ import com.taskmanager.task.entity.Task;
 import com.taskmanager.task.enums.TaskStatus;
 import com.taskmanager.task.mapper.TaskMapper;
 import com.taskmanager.task.repository.TaskRepository;
+import com.taskmanager.task.security.UserPrincipal;
 import com.taskmanager.task.specification.TaskSpecification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,19 +25,16 @@ public class TaskService {
         this.taskRepository = tasksRepository;
     }
 
-    public Task addTask(TaskDTO taskDTO){
+    public Task addTask(TaskDTO taskDTO) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = (Long) authentication.getPrincipal(); // Get user ID from security context
 
-        if(taskDTO.getDetails().isBlank() || taskDTO.getName().isBlank())
-        {
-            throw new IllegalArgumentException("All Fields Are Required");
+        if (taskRepository.existsByName(taskDTO.getName())) {
+            throw new IllegalArgumentException("Task name already exists");
         }
-
-        if(taskRepository.existsByName(taskDTO.getName())){
-            throw new IllegalArgumentException("name already exist");
-        }
-
 
         Task task = TaskMapper.toEntity(taskDTO);
+        task.setUserId(userId);
         task.setStatus(TaskStatus.NOT_STARTED);
         return taskRepository.save(task);
     }

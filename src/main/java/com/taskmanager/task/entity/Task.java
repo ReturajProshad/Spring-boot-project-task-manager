@@ -15,12 +15,24 @@ public class Task {
     private String details;
     @Enumerated(EnumType.STRING)
     private TaskStatus status;
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
 
-    public Task(Long id, String name, String details, TaskStatus status) {
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+
+    public Task(Long id, String name, String details, TaskStatus status,Long userId) {
         this.id = id;
         this.name = name;
         this.details = details;
         this.status = status;
+        this.userId=userId;
     }
 
     public TaskStatus getStatus() {
@@ -31,11 +43,6 @@ public class Task {
         this.status = status;
     }
 
-    public Task(Long id, String name, String details) {
-        this.id = id;
-        this.name = name;
-        this.details = details;
-    }
 
     public Task() {
     }
