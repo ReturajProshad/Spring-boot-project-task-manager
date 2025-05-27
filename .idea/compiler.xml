@@ -3,22 +3,28 @@
   <component name="CompilerConfiguration">
     <annotationProcessing>
       <profile default="true" name="Default" enabled="true" />
-      <profile name="Annotation profile for task" enabled="true">
+      <profile name="Annotation profile for taskFiles" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.38/lombok-1.18.38.jar" />
         </processorPath>
-        <module name="task" />
+        <module name="taskFiles" />
         <module name="authentication" />
+        <module name="task" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="fileprocessing" target="21" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="authentication" options="-parameters" />
+      <module name="fileprocessing" options="-parameters" />
       <module name="task" options="-parameters" />
+      <module name="taskFiles" options="-parameters" />
     </option>
   </component>
 </project>
